@@ -2,11 +2,14 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
 from django.contrib.auth.decorators import login_required
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
+from typing import Any
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import User
+from .models import User, Town, Company, Contract
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
@@ -38,3 +41,47 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser", "supervisor", "it_staff"]
     search_fields = ["name"]
+
+
+@admin.register(Town)
+class TownAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    list_display_links = ("name",)
+    search_fields = ("name",)
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    list_display_links = ("name",)
+    search_fields = ("name",)
+
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = ["number"]
+    list_display_links = ("number",)
+    search_fields = (
+        "number",
+        "object",
+    )
+
+    autocomplete_fields = (
+        "company",
+        "town",
+        "creator",
+        "gip",
+    )
+    filter_horizontal = ("users",)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "company",
+                "town",
+                "creator",
+                "gip",
+            )
+        )
