@@ -21,6 +21,7 @@ class UserAdmin(auth_admin.UserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         (_("Personal info"), {"fields": ("name", "email")}),
+        (_("Status"), {"fields": ("supervisor", "it_staff")}),
         (
             _("Permissions"),
             {
@@ -35,5 +36,5 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ["username", "name", "is_superuser"]
+    list_display = ["username", "name", "is_superuser", "supervisor", "it_staff"]
     search_fields = ["name"]
