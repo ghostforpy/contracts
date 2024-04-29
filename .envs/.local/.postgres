@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=contracts
+POSTGRES_USER=rhxTEaAbRNRtxwbtmOlarfYBpjTLQDSP
+POSTGRES_PASSWORD=tzEusTqf4Bhvud6VLcM00XcjmZ048e8WbfrpRpCsdvGbEgzBiPEbryM9rjRgrr5c
