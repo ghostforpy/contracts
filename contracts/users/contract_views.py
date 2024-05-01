@@ -19,7 +19,7 @@ from django.views.generic import (
 
 # from django.views.generic.list import BaseListView
 
-from .models import Contract
+from .models import Contract, UserContractFolders
 
 # Topic views
 
@@ -76,6 +76,20 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.creator = self.request.user
         return super().form_valid(form)
+
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        p = super().post(request, *args, **kwargs)
+        if self.request.user not in self.object.users.all():
+            self.object.users.add(self.request.user)
+        if self.object.gip not in self.object.users.all():
+            self.object.users.add(self.object.gip)
+        UserContractFolders.objects.bulk_create(
+            [
+                UserContractFolders(user=i, contract=self.object)
+                for i in self.object.users.all()
+            ]
+        )
+        return p
 
 
 # class TopicDetailView(DetailView):
