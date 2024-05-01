@@ -101,3 +101,28 @@ class Contract(models.Model):
 
     def __str__(self) -> str:
         return f"Контракт №{self.number}"
+
+
+class UserContractFolders(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="contract_folders",
+    )
+    contract = models.ForeignKey(
+        Contract,
+        on_delete=models.CASCADE,
+        verbose_name="Контракт",
+        related_name="user_folders",
+    )
+    ada = models.BooleanField(default=False)
+    mpe = models.BooleanField(default=False)
+    mpm = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = _("Доступы к директориям")
+        verbose_name = _("Доступы к директориям")
+
+    # def __str__(self) -> str:
+    #     return f"Контракт №{self.number}"

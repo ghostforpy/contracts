@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+
+
+{% if user.is_superuser %}
+    <a class="btn btn-info mt-3" href="{% url 'contracts:contract-add' %}" role="button">Новый контракт</a>
+{% endif %}
+
+<table class="table mt-3">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Наименование</th>
+        <th scope="col">Статус</th>
+        <th scope="col">Предприятие</th>
+        <th scope="col">Начало</th>
+        <th scope="col">Окончание</th>
+        <th scope="col">Создан</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for contract in contracts %}
+          <tr>
+            <th scope="row">{{contract.number}}</th>
+            <td>{{contract.object}}</td>
+            <td>{{contract.get_state_display}}</td>
+            <td>{{contract.company}}</td>
+            <td>{{contract.start}}</td>
+            <td>{% if contract.end %}{{contract.end}}{% else %}{% endif %}</td>
+            <td>{{contract.creator}}</td>
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock content %} 

@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from typing import Any
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import User, Town, Company, Contract
+from .models import User, Town, Company, Contract, UserContractFolders
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
@@ -57,6 +57,10 @@ class CompanyAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
+class UserContractFoldersInline(admin.TabularInline):
+    model = UserContractFolders
+
+
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
     list_display = ["number"]
@@ -65,7 +69,7 @@ class ContractAdmin(admin.ModelAdmin):
         "number",
         "object",
     )
-
+    inlines = [UserContractFoldersInline]
     autocomplete_fields = (
         "company",
         "town",
@@ -83,5 +87,31 @@ class ContractAdmin(admin.ModelAdmin):
                 "town",
                 "creator",
                 "gip",
+            )
+        )
+
+
+@admin.register(UserContractFolders)
+class UserContractFoldersAdmin(admin.ModelAdmin):
+    list_display = ["id", "contract", "user", "ada", "mpm", "mpe"]
+    list_display_links = ("id",)
+    search_fields = ("contract__number",)
+    list_editable = (
+        "ada",
+        "mpm",
+        "mpe",
+    )
+    autocomplete_fields = (
+        "contract",
+        "user",
+    )
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "contract",
+                "user",
             )
         )
