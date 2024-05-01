@@ -102,6 +102,9 @@ class Contract(models.Model):
     def __str__(self) -> str:
         return f"Контракт №{self.number}"
 
+    def get_absolute_url(self):
+        return reverse("contract-detail", kwargs={"pk": self.pk})
+
 
 class UserContractFolders(models.Model):
     user = models.ForeignKey(

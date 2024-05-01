@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<div class="row mb-5">
+  <div class="col-5">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <span>Номер</span><span>{{contract.number}}</span>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between"><span>Наименование объекта</span><span>{{contract.object}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Статус</span><span>{{contract.get_state_display}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Предприятие</span><span>{{contract.company}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Город</span><span>{{contract.town}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Описание работ</span><span>{{contract.description}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Дата начала работ</span><span>{{contract.start}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Плановая дата окончания работ</span><span>{% if contract.end %}{{contract.end}}{% endif %}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Создатель</span><span>{{contract.creator}}</span></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Руководитель</span><span>{{contract.gip}}</span></li>
+        </ul>
+      </div>
+  </div>
+  <div class="col-7">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Ada</th>
+            <th scope="col">Mpe</th>
+            <th scope="col">Mpm</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in user_folders %}
+              <tr>
+                <th scope="row">
+                    {{user.user}}
+                </th>
+                <td>{% if user.ada %}+{% else %}-{% endif %}</td>
+                <td>{% if user.mpe %}+{% else %}-{% endif %}</td>
+                <td>{% if user.mpm %}+{% else %}-{% endif %}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+  </div>
+</div>
+
+{% endblock content %} 

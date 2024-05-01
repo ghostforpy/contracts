@@ -30,7 +30,9 @@
     <tbody>
         {% for contract in contracts %}
           <tr>
-            <th scope="row">{{contract.number}}</th>
+            <th scope="row">
+                <a href="{% url 'contracts:contract-detail' contract.id %}">{{contract.number}}</a>
+            </th>
             <td>{{contract.object}}</td>
             <td>{{contract.get_state_display}}</td>
             <td>{{contract.company}}</td>

@@ -92,13 +92,15 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
         return p
 
 
-# class TopicDetailView(DetailView):
-#     model = Topic
+class ContractDetailView(DetailView):
+    model = Contract
 
-#     def get_context_data(self, **kwargs):
-#         context = super(TopicDetailView, self).get_context_data(**kwargs)
-#         context["posts"] = Post.objects.filter(topic=self.kwargs.get("pk"))
-#         return context
+    def get_context_data(self, **kwargs):
+        context = super(ContractDetailView, self).get_context_data(**kwargs)
+        context["user_folders"] = UserContractFolders.objects.filter(
+            contract=self.kwargs.get("pk")
+        ).select_related("user")
+        return context
 
 
 # class TopicCreateView(LoginRequiredMixin, CreateView):
