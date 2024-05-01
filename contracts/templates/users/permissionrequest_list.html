@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th scope="col">Контракт</th>
+      <th scope="col">Пользователь</th>
+      <th scope="col">Ada</th>
+      <th scope="col">Mpe</th>
+      <th scope="col">Mpm</th>
+      <th scope="col">Создатель</th>
+      <th scope="col">Создано</th>
+      <th scope="col">Исполнено</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for r in permission_requests %}
+        <tr>
+          <th scope="row">
+            <a href="{% url 'contracts:contract-detail' r.contract_id %}">{{r.contract.number}}</a>
+        </th>
+          <th scope="row">
+              {{r.user}}
+          </th>
+          <td>{% if r.ada %}+{% else %}-{% endif %}</td>
+          <td>{% if r.mpe %}+{% else %}-{% endif %}</td>
+          <td>{% if r.mpm %}+{% else %}-{% endif %}</td>
+          <td>{{r.creator}}</td>
+          <td>{{r.created}}</td>
+          <td>{% if r.done %}{{r.done}}{% endif %}</td>
+        </tr>
+      {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %} 

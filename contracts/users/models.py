@@ -1,7 +1,9 @@
+from typing import Iterable
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.core.mail import send_mail
 
 
 class User(AbstractUser):
@@ -103,7 +105,7 @@ class Contract(models.Model):
         return f"Контракт №{self.number}"
 
     def get_absolute_url(self):
-        return reverse("contract-detail", kwargs={"pk": self.pk})
+        return reverse("contracts:contract-detail", kwargs={"pk": self.pk})
 
 
 class UserContractFolders(models.Model):
@@ -129,3 +131,46 @@ class UserContractFolders(models.Model):
 
     # def __str__(self) -> str:
     #     return f"Контракт №{self.number}"
+
+
+class PermissionRequest(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="permission_requests",
+    )
+    contract = models.ForeignKey(
+        Contract,
+        on_delete=models.CASCADE,
+        verbose_name="Контракт",
+        related_name="permission_requests",
+    )
+    ada = models.BooleanField(default=False)
+    mpe = models.BooleanField(default=False)
+    mpm = models.BooleanField(default=False)
+    creator = models.ForeignKey(
+        User,
+        verbose_name="Создатель",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="created_permission_requests",
+        editable=False,
+    )
+    created = models.DateTimeField("Создано", auto_now_add=True)
+    done = models.DateTimeField("Исполнено", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = _("Заявки")
+        verbose_name = _("Заявка")
+
+    def save(self, *args, **kwargs) -> None:
+        send_mail(
+            "Новая заявка",
+            f"http://0.0.0.0:8000{self.contract.get_absolute_url()}",
+            "from@example.com",
+            ["to@example.com"],
+            fail_silently=False,
+        )
+        return super().save(*args, **kwargs)

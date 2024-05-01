@@ -9,7 +9,14 @@ from django.utils.translation import gettext_lazy as _
 from typing import Any
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import User, Town, Company, Contract, UserContractFolders
+from .models import (
+    User,
+    Town,
+    Company,
+    Contract,
+    UserContractFolders,
+    PermissionRequest,
+)
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
@@ -113,5 +120,32 @@ class UserContractFoldersAdmin(admin.ModelAdmin):
             .select_related(
                 "contract",
                 "user",
+            )
+        )
+
+
+@admin.register(PermissionRequest)
+class PermissionRequestAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "contract",
+        "user",
+        "ada",
+        "mpe",
+        "mpm",
+        "creator",
+        "created",
+        "done",
+    ]
+    list_display_links = ("id",)
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Any]:
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "contract",
+                "user",
+                "creator",
             )
         )

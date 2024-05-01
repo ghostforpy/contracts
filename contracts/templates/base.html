@@ -71,11 +71,14 @@
         <a class="navbar-brand" href="{% url 'home' %}">Contracts</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            {% comment %} <li class="nav-item active">
               <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
+            </li> {% endcomment %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'contracts:contract-list' %}">Контракты</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'contracts:contract-list' %}">Contracts</a>
+              <a class="nav-link" href="{% url 'contracts:permission-request-list' %}">Заявки</a>
             </li>
             {% if request.user.is_authenticated %}
               <li class="nav-item">

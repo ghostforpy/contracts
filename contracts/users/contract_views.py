@@ -19,7 +19,7 @@ from django.views.generic import (
 
 # from django.views.generic.list import BaseListView
 
-from .models import Contract, UserContractFolders
+from .models import Contract, UserContractFolders, PermissionRequest
 
 # Topic views
 
@@ -71,7 +71,7 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
         "gip",
         "users",
     ]
-    success_url = "/contracts/"
+    # success_url = "/contracts/"
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -85,7 +85,13 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
             self.object.users.add(self.object.gip)
         UserContractFolders.objects.bulk_create(
             [
-                UserContractFolders(user=i, contract=self.object)
+                UserContractFolders(
+                    user=i,
+                    contract=self.object,
+                    ada=i == self.object.gip,
+                    mpe=i == self.object.gip,
+                    mpm=i == self.object.gip,
+                )
                 for i in self.object.users.all()
             ]
         )
@@ -100,84 +106,45 @@ class ContractDetailView(DetailView):
         context["user_folders"] = UserContractFolders.objects.filter(
             contract=self.kwargs.get("pk")
         ).select_related("user")
+        context["permission_requests"] = (
+            PermissionRequest.objects.filter(contract=self.kwargs.get("pk"))
+            .select_related("user", "creator")
+            .order_by("-id")
+        )
         return context
 
 
-# class TopicCreateView(LoginRequiredMixin, CreateView):
-#     model = Topic
-#     fields = ["title", "description", "subsection"]
+class PermissionRequestCreateView(LoginRequiredMixin, CreateView):
+    model = PermissionRequest
+    fields = ["user", "ada", "mpe", "mpm"]
 
-#     def form_valid(self, form):
-#         return super().form_valid(form)
+    def get_success_url(self) -> str:
+        return self.object.contract.get_absolute_url()
 
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        form.instance.contract_id = self.kwargs.get("pk")
+        return super().form_valid(form)
 
-# # Post views
-
-
-# class PostDetailView(LoginRequiredMixin, FormMixin, DetailView):
-#     model = Post
-#     form_class = CreateCommentForm
-
-#     def get_context_data(self, **kwargs):
-#         context = super(PostDetailView, self).get_context_data(**kwargs)
-#         context["comments"] = Comment.objects.filter(post=self.kwargs.get("pk"))
-#         context["form"] = CreateCommentForm(
-#             initial={"post": self.object, "author": self.request.user}
-#         )
-
-#         return context
-
-#     def get_success_url(self):
-#         return reverse("post-detail", kwargs={"pk": self.object.id})
-
-#     def post(self, request, *args, **kwargs):
-#         self.object = self.get_object()
-#         form = self.get_form()
-#         if form.is_valid():
-#             return self.form_valid(form)
-#         else:
-#             return self.form_invalid(form)
-
-#     def form_valid(self, form):
-#         form.save()
-#         return super(PostDetailView, self).form_valid(form)
+    def dispatch(self, request, *args, **kwargs):
+        p = super().dispatch(request, *args, **kwargs)
+        if p:
+            if not Contract.objects.filter(
+                id=self.kwargs.get("pk"), gip=request.user
+            ).exists():
+                return self.handle_no_permission()
+        return p
 
 
-# class PostCreateView(LoginRequiredMixin, CreateView):
-#     model = Post
-#     fields = ["body"]
+class PermissionRequestListView(ListView):
+    model = PermissionRequest
+    context_object_name = "permission_requests"
 
-#     def get_success_url(self) -> str:
-
-#         return self.object.topic.get_absolute_url()
-
-#     def form_valid(self, form):
-#         form.instance.author = self.request.user
-#         form.instance.topic = Topic.objects.get(pk=self.kwargs["pk"])
-#         return super().form_valid(form)
-
-
-# class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-#     model = Post
-#     fields = ["title", "body"]
-
-#     def form_valid(self, form):
-#         form.instance.author = self.request.user
-#         return super().form_valid(form)
-
-#     def test_func(self):
-#         post = self.get_object()
-#         if self.request.user == post.author:
-#             return True
-#         return False
-
-
-# class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-#     model = Post
-#     success_url = "/"
-
-#     def test_func(self):
-#         post = self.get_object()
-#         if self.request.user == post.author:
-#             return True
-#         return False
+    def get_queryset(self) -> QuerySet[Any]:
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("user", "creator", "contract")
+            .order_by("-id")
+        )
+        return qs
