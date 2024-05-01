@@ -1,10 +1,13 @@
 from typing import Any
+from datetime import datetime
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
 from django.core.paginator import InvalidPage, Paginator
+from django.db.models import Q
+from .forms import ContarctFilterForm
 from django.views.generic import (
     ListView,
     DetailView,
@@ -25,18 +28,33 @@ class ContractListView(ListView):
     model = Contract
     # template_name = "themes/index.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "contracts"
+    # form_class = ContarctFilterForm
     # paginate_by = 5
 
     def get_queryset(self) -> QuerySet[Any]:
-        return super().get_queryset().select_related("company", "creator")
+        self.form = ContarctFilterForm(self.request.GET)
+        qs = super().get_queryset().select_related("company", "creator").order_by("-id")
+        query = self.request.GET.get("query", None)
+        if query:
+            qs = qs.filter(
+                Q(number__icontains=query)
+                | Q(object__icontains=query)
+                | Q(description__icontains=query)
+                | Q(company__name__icontains=query)
+                | Q(town__name__icontains=query)
+            ).distinct()
+        start = self.request.GET.get("start", None)
+        if start:
+            qs = qs.filter(start=datetime.strptime(start, "%d.%m.%Y"))
+        end = self.request.GET.get("end", None)
+        if end:
+            qs = qs.filter(end=datetime.strptime(end, "%d.%m.%Y"))
+        return qs
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(TopicListView, self).get_context_data(**kwargs)
-    #     # page = self.kwargs.get("page", None)
-    #     # print("page", page)
-    #     context["important_topics"] = Topic.objects.filter(subsection="important")
-    #     context["common_topics"] = Topic.objects.filter(subsection="common")
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super(ContractListView, self).get_context_data(**kwargs)
+        context["form"] = self.form
+        return context
 
 
 class ContractCreateView(LoginRequiredMixin, CreateView):

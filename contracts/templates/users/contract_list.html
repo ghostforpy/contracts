@@ -1,18 +1,24 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 
-
-
-
-
+<form>
+    <fieldset class="form-group">
+        {{ form|crispy }}
+    </fieldset>
+    <div class="form-group">
+        <button class="btn btn-outline-info" type="submit">Поиск</button>
+        {% if form.query.value or form.start.value or form.end.value %}<a class="btn btn-info" href="{% url 'contracts:contract-list' %}" role="button">Сброс</a>{% endif %}
+    </div>
+</form>
 {% if user.is_superuser %}
-    <a class="btn btn-info mt-3" href="{% url 'contracts:contract-add' %}" role="button">Новый контракт</a>
+    <a class="btn btn-info mt-5" href="{% url 'contracts:contract-add' %}" role="button">Новый контракт</a>
 {% endif %}
 
 <table class="table mt-3">
     <thead>
       <tr>
-        <th scope="col">#</th>
+        <th scope="col">Номер контракта</th>
         <th scope="col">Наименование</th>
         <th scope="col">Статус</th>
         <th scope="col">Предприятие</th>

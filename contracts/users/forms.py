@@ -2,6 +2,7 @@ from allauth.account.forms import SignupForm
 from allauth.socialaccount.forms import SignupForm as SocialSignupForm
 from django.contrib.auth import forms as admin_forms
 from django.utils.translation import gettext_lazy as _
+from django import forms
 
 from .models import User
 
@@ -38,3 +39,11 @@ class UserSocialSignupForm(SocialSignupForm):
     Default fields will be added automatically.
     See UserSignupForm otherwise.
     """
+
+
+class ContarctFilterForm(forms.Form):
+    query = forms.CharField(
+        label="Поиск по ключевым словам", max_length=100, required=False
+    )
+    start = forms.DateField(label="Дата начала", required=False)
+    end = forms.DateField(label="Дата окончания", required=False)
