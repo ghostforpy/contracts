@@ -77,9 +77,11 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'contracts:contract-list' %}">Контракты</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'contracts:permission-request-list' %}">Заявки</a>
-            </li>
+            {% if request.user.is_authenticated  and request.user.it_staff%}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'contracts:permission-request-list' %}">Заявки</a>
+              </li>
+            {% endif %}
             {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link"

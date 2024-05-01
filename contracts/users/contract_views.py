@@ -136,7 +136,7 @@ class PermissionRequestCreateView(LoginRequiredMixin, CreateView):
         return p
 
 
-class PermissionRequestListView(ListView):
+class PermissionRequestListView(LoginRequiredMixin, ListView):
     model = PermissionRequest
     context_object_name = "permission_requests"
 
@@ -148,3 +148,10 @@ class PermissionRequestListView(ListView):
             .order_by("-id")
         )
         return qs
+
+    def dispatch(self, request, *args, **kwargs):
+        p = super().dispatch(request, *args, **kwargs)
+        if p:
+            if not self.request.user.it_staff:
+                return self.handle_no_permission()
+        return p
