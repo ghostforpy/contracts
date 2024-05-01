@@ -48,36 +48,38 @@
     {% if user.is_authenticated %}
         {% if user == contract.gip %}
             <a class="btn btn-info" href="{% url 'contracts:permission-request-add' contract.id %}" role="button">Новая заявка</a>
-        {% endif %}
-    {% endif %}
-    <table class="table mt-3">
-      <thead>
-        <tr>
-          <th scope="col">Пользователь</th>
-          <th scope="col">Ada</th>
-          <th scope="col">Mpe</th>
-          <th scope="col">Mpm</th>
-          <th scope="col">Создатель</th>
-          <th scope="col">Создано</th>
-          <th scope="col">Исполнено</th>
-        </tr>
-      </thead>
-      <tbody>
-          {% for r in permission_requests %}
-            <tr>
-              <th scope="row">
-                  {{r.user}}
-              </th>
-              <td>{% if r.ada %}+{% else %}-{% endif %}</td>
-              <td>{% if r.mpe %}+{% else %}-{% endif %}</td>
-              <td>{% if r.mpm %}+{% else %}-{% endif %}</td>
-              <td>{{r.creator}}</td>
-              <td>{{r.created}}</td>
-              <td>{% if r.done %}{{r.done}}{% endif %}</td>
-            </tr>
-          {% endfor %}
-      </tbody>
-  </table>
+        {%endif%}
+        {% if user == contract.gip or user.it_staff %}
+          <table class="table mt-3">
+            <thead>
+              <tr>
+                <th scope="col">Пользователь</th>
+                <th scope="col">Ada</th>
+                <th scope="col">Mpe</th>
+                <th scope="col">Mpm</th>
+                <th scope="col">Создатель</th>
+                <th scope="col">Создано</th>
+                <th scope="col">Исполнено</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for r in permission_requests %}
+                  <tr>
+                    <th scope="row">
+                        {{r.user}}
+                    </th>
+                    <td>{% if r.ada %}+{% else %}-{% endif %}</td>
+                    <td>{% if r.mpe %}+{% else %}-{% endif %}</td>
+                    <td>{% if r.mpm %}+{% else %}-{% endif %}</td>
+                    <td>{{r.creator}}</td>
+                    <td>{{r.created}}</td>
+                    <td>{% if r.done %}{{r.done}}{% endif %}</td>
+                  </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+  {% endif %}
   </div>
 </div>
 
