@@ -107,6 +107,12 @@ class Contract(models.Model):
     def get_absolute_url(self):
         return reverse("contracts:contract-detail", kwargs={"pk": self.pk})
 
+    def get_admin_url(self):
+        return reverse(
+            "admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name),
+            args=(self.id,),
+        )
+
 
 class UserContractFolders(models.Model):
     user = models.ForeignKey(
@@ -166,11 +172,18 @@ class PermissionRequest(models.Model):
         verbose_name = _("Заявка")
 
     def save(self, *args, **kwargs) -> None:
+        s = super().save(*args, **kwargs)
         send_mail(
             "Новая заявка",
-            f"http://0.0.0.0:8000{self.contract.get_absolute_url()}",
+            f"http://0.0.0.0:8000{self.contract.get_absolute_url()}\nhttp://0.0.0.0:8000{self.contract.get_admin_url()}",
             "from@example.com",
             ["to@example.com"],
             fail_silently=False,
         )
-        return super().save(*args, **kwargs)
+        return s
+
+    def get_admin_url(self):
+        return reverse(
+            "admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name),
+            args=(self.id,),
+        )

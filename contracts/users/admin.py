@@ -68,6 +68,10 @@ class UserContractFoldersInline(admin.TabularInline):
     model = UserContractFolders
 
 
+class PermissionRequestInline(admin.TabularInline):
+    model = PermissionRequest
+
+
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
     list_display = ["number"]
@@ -76,7 +80,7 @@ class ContractAdmin(admin.ModelAdmin):
         "number",
         "object",
     )
-    inlines = [UserContractFoldersInline]
+    inlines = [UserContractFoldersInline, PermissionRequestInline]
     autocomplete_fields = (
         "company",
         "town",

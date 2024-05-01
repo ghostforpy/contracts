@@ -46,9 +46,9 @@
         </tbody>
     </table>
     {% if user.is_authenticated %}
-        {% comment %} {% if user == contract.gip %} {% endcomment %}
+        {% if user == contract.gip %}
             <a class="btn btn-info" href="{% url 'contracts:permission-request-add' contract.id %}" role="button">Новая заявка</a>
-        {% comment %} {% endif %} {% endcomment %}
+        {% endif %}
     {% endif %}
     <table class="table mt-3">
       <thead>
