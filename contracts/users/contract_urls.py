@@ -6,6 +6,7 @@ from .contract_views import (
     ContractDetailView,
     PermissionRequestCreateView,
     PermissionRequestListView,
+    PermissionRequestDoneView,
 )
 
 app_name = "contracts"
@@ -22,6 +23,11 @@ urlpatterns = [
         "permission-request-add/<int:pk>/",
         PermissionRequestCreateView.as_view(),
         name="permission-request-add",
+    ),
+    path(
+        "permission-request-done/<int:pk>/",
+        PermissionRequestDoneView.as_view(),
+        name="permission-request-done",
     ),
     path("<int:pk>/", ContractDetailView.as_view(), name="contract-detail"),
     # path("~update/", view=user_update_view, name="update"),

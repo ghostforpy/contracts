@@ -29,6 +29,12 @@ class User(AbstractUser):
         """
         return reverse("users:detail", kwargs={"username": self.username})
 
+    def __str__(self) -> str:
+        # r = super().__str__()
+        # if self.get_full_name():
+        #     r = self.get_full_name()
+        return self.name or super().__str__()
+
 
 class Company(models.Model):
     name = models.CharField("Наименование", max_length=50, unique=True)

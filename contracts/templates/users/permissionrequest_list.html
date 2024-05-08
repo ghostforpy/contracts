@@ -28,7 +28,15 @@
           <td>{% if r.mpm %}+{% else %}-{% endif %}</td>
           <td>{{r.creator}}</td>
           <td>{{r.created}}</td>
-          <td>{% if r.done %}{{r.done}}{% endif %}</td>
+          <td>{% if r.done %}{{r.done}}
+              {% else %}
+              <form method="POST" action="{% url 'contracts:permission-request-done' r.id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <button class="btn btn-outline-info" type="submit">Исполнить</button>
+                </div>
+            </form>
+          {% endif %}</td>
         </tr>
       {% endfor %}
   </tbody>

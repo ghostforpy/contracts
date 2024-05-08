@@ -7,6 +7,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
 from django.core.paginator import InvalidPage, Paginator
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+
+from django.utils.timezone import now
 from .forms import ContarctFilterForm
 from django.views.generic import (
     ListView,
@@ -14,6 +17,7 @@ from django.views.generic import (
     CreateView,
     UpdateView,
     DeleteView,
+    View,
     # TemplateView,
 )
 
@@ -148,6 +152,38 @@ class PermissionRequestListView(LoginRequiredMixin, ListView):
             .order_by("-id")
         )
         return qs
+
+    def dispatch(self, request, *args, **kwargs):
+        p = super().dispatch(request, *args, **kwargs)
+        if p:
+            if not self.request.user.it_staff:
+                return self.handle_no_permission()
+        return p
+
+
+class PermissionRequestDoneView(LoginRequiredMixin, View):
+    success_url = "/contracts/permission-requests/"
+
+    def post(self, request, *args, **kwargs):
+        pr = PermissionRequest.objects.filter(id=self.kwargs.get("pk")).first()
+        ucf = UserContractFolders.objects.filter(
+            user_id=pr.user_id, contract_id=pr.contract_id
+        ).first()
+        if ucf:
+            ucf.ada = pr.ada
+            ucf.mpe = pr.mpe
+            ucf.mpm = pr.mpm
+            ucf.save()
+        else:
+            UserContractFolders.objects.create(
+                user_id=pr.user_id,
+                contract_id=pr.contract_id,
+                ada=pr.ada,
+                mpe=pr.mpe,
+                mpm=pr.mpm,
+            )
+        PermissionRequest.objects.filter(id=self.kwargs.get("pk")).update(done=now())
+        return HttpResponseRedirect(self.request.META["HTTP_REFERER"])
 
     def dispatch(self, request, *args, **kwargs):
         p = super().dispatch(request, *args, **kwargs)
