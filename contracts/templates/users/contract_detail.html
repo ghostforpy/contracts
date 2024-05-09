@@ -21,6 +21,63 @@
           <li class="list-group-item d-flex justify-content-between"><span>Руководитель</span><span>{{contract.gip}}</span></li>
         </ul>
       </div>
+      <table class="table mt-5">
+        <thead>
+          <tr>
+            <th scope="col">Название каталога</th>
+            <th scope="col">Добавление</th>
+            <th scope="col">Удаление</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if contract.ada %}
+            <tr>
+              <th scope="row">
+                  Ada
+              </th>
+              <td>
+                {% for u in user_folders %}
+                  {% if u.ada %}
+                    {{u.user}}{% if not forloop.last %}; {% endif %}
+                  {% endif %}
+                  
+                {% endfor %}
+              </td>
+              <td></td>
+            </tr>
+          {% endif %}
+          {% if contract.mpe %}
+            <tr>
+              <th scope="row">
+                  Mpe
+              </th>
+              <td>
+                {% for u in user_folders %}
+                  {% if u.mpe %}
+                    {{u.user}}{% if not forloop.last %}; {% endif %}
+                  {% endif %}
+                {% endfor %}
+            </td>
+              <td></td>
+            </tr>
+          {% endif %}
+          {% if contract.mpm %}
+            <tr>
+              <th scope="row">
+                  Mpm
+              </th>
+              <td>
+                {% for u in user_folders %}
+                  {% if u.mpm %}
+                    {{u.user}}{% if not forloop.last %}; {% endif %}
+                  {% endif %}
+                {% endfor %}
+            </td>
+            <td></td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
   </div>
   <div class="col-7">
     <table class="table">
