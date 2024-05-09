@@ -27,9 +27,9 @@
         <thead>
           <tr>
             <th scope="col">Пользователь</th>
-            <th scope="col">Ada</th>
-            <th scope="col">Mpe</th>
-            <th scope="col">Mpm</th>
+            {% if contract.ada %}<th scope="col">Ada</th>{% endif %}
+            {% if contract.mpe %}<th scope="col">Mpe</th>{% endif %}
+            {% if contract.mpm %}<th scope="col">Mpm</th>{% endif %}
           </tr>
         </thead>
         <tbody>
@@ -38,9 +38,9 @@
                 <th scope="row">
                     {{user.user}}
                 </th>
-                <td>{% if user.ada %}+{% else %}-{% endif %}</td>
-                <td>{% if user.mpe %}+{% else %}-{% endif %}</td>
-                <td>{% if user.mpm %}+{% else %}-{% endif %}</td>
+                {% if contract.ada %}<td>{% if user.ada %}+{% else %}-{% endif %}</td>{% endif %}
+                {% if contract.mpe %}<td>{% if user.mpe %}+{% else %}-{% endif %}</td>{% endif %}
+                {% if contract.mpm %}<td>{% if user.mpm %}+{% else %}-{% endif %}</td>{% endif %}
               </tr>
             {% endfor %}
         </tbody>
@@ -54,9 +54,9 @@
             <thead>
               <tr>
                 <th scope="col">Пользователь</th>
-                <th scope="col">Ada</th>
-                <th scope="col">Mpe</th>
-                <th scope="col">Mpm</th>
+                {% if contract.ada %}<th scope="col">Ada</th>{% endif %}
+                {% if contract.mpe %}<th scope="col">Mpe</th>{% endif %}
+                {% if contract.mpm %}<th scope="col">Mpm</th>{% endif %}
                 <th scope="col">Создатель</th>
                 <th scope="col">Создано</th>
                 <th scope="col">Исполнено</th>
@@ -68,9 +68,9 @@
                     <th scope="row">
                         {{r.user}}
                     </th>
-                    <td>{% if r.ada %}+{% else %}-{% endif %}</td>
-                    <td>{% if r.mpe %}+{% else %}-{% endif %}</td>
-                    <td>{% if r.mpm %}+{% else %}-{% endif %}</td>
+                    {% if contract.ada %}<td>{% if r.ada %}+{% else %}-{% endif %}</td>{% endif %}
+                    {% if contract.mpe %}<td>{% if r.mpe %}+{% else %}-{% endif %}</td>{% endif %}
+                    {% if contract.mpm %}<td>{% if r.mpm %}+{% else %}-{% endif %}</td>{% endif %}
                     <td>{{r.creator}}</td>
                     <td>{{r.created}}</td>
                     <td>
