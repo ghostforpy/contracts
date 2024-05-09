@@ -5,7 +5,7 @@
 
 <div class="row">
   <div class="col-10 offset-1 mt-5">
-      <h1>Новый заявка на предоставление доступа по контракту</h1>
+      <h1>Новая заявка на предоставление доступа по контракту</h1>
   </div>
 </div>
 
@@ -14,6 +14,15 @@
       <form method="POST">
           {% csrf_token %}
           <fieldset class="form-group">
+            {% comment %} {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {{ field.label_tag }} {{ field }}
+                    {% if field.help_text %}
+                    <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %} {% endcomment %}
               {{ form|crispy }}
           </fieldset>
           <div class="form-group">

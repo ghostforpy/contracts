@@ -1,6 +1,7 @@
 from typing import Any
 from datetime import datetime
 from django.db.models.query import QuerySet
+from django.forms.models import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -74,6 +75,9 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
         "end",
         "gip",
         "users",
+        "ada",
+        "mpe",
+        "mpm",
     ]
     # success_url = "/contracts/"
 
@@ -92,9 +96,9 @@ class ContractCreateView(LoginRequiredMixin, CreateView):
                 UserContractFolders(
                     user=i,
                     contract=self.object,
-                    ada=i == self.object.gip,
-                    mpe=i == self.object.gip,
-                    mpm=i == self.object.gip,
+                    ada=i == self.object.gip and self.object.ada,
+                    mpe=i == self.object.gip and self.object.mpe,
+                    mpm=i == self.object.gip and self.object.mpm,
                 )
                 for i in self.object.users.all()
             ]
@@ -138,6 +142,17 @@ class PermissionRequestCreateView(LoginRequiredMixin, CreateView):
             ).exists():
                 return self.handle_no_permission()
         return p
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        contract = Contract.objects.get(id=self.kwargs.get("pk"))
+        if not contract.ada:
+            del context["form"].fields["ada"]
+        if not contract.mpe:
+            del context["form"].fields["mpe"]
+        if not contract.mpm:
+            del context["form"].fields["mpm"]
+        return context
 
 
 class PermissionRequestListView(LoginRequiredMixin, ListView):

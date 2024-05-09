@@ -102,6 +102,9 @@ class Contract(models.Model):
         verbose_name="Пользователи",
         related_name="contracts",
     )
+    ada = models.BooleanField(default=False)
+    mpe = models.BooleanField(default=False)
+    mpm = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = _("Контракты")
