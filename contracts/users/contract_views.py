@@ -2,12 +2,13 @@ from typing import Any
 from datetime import datetime
 from django.db.models.query import QuerySet
 from django.forms.models import BaseModelForm
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic.edit import FormMixin
 from django.core.paginator import InvalidPage, Paginator
 from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 
 from django.utils.timezone import now
@@ -265,6 +266,22 @@ class UpdateContractView(UpdateView):
 
     def get_success_url(self) -> str:
         return reverse("contracts:contract-detail", kwargs={"pk": self.get_object().id})
+
+    def check_permission(self):
+        if self.request.user.is_anonymous:
+            raise PermissionDenied("No permissions")
+        if not Contract.objects.filter(
+            id=self.kwargs.get("pk"), gip_id=self.request.user.id
+        ).exists():
+            raise PermissionDenied("No permissions")
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        self.check_permission()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        self.check_permission()
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         old_end_date = self.get_object().end
