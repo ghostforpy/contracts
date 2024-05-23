@@ -164,6 +164,11 @@ class ContractDetailView(DetailView):
             .select_related("user", "creator")
             .order_by("-id")
         )
+        context["end_date_edits"] = (
+            EndDateContractChange.objects.filter(contract=self.kwargs.get("pk"))
+            .select_related("user")
+            .order_by("-id")
+        )
         return context
 
 

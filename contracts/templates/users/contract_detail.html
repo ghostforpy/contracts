@@ -80,6 +80,28 @@
           {% endif %}
         </tbody>
       </table>
+
+
+      <table class="table mt-5">
+        <thead>
+          <tr>
+            <th scope="col">Пользователь</th>
+            <th scope="col">Новая дата</th>
+            <th scope="col">Дата изменения</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in end_date_edits %}
+          <tr>
+            <th scope="row">
+                {{c.user}}
+            </th>
+            <td>{{c.new_date }}</td>
+            <td>{{c.created }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      </table>
   </div>
   <div class="col-7">
     <table class="table">
