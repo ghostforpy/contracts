@@ -7,7 +7,9 @@
   <div class="col-5">
     <div class="card">
         <div class="card-header d-flex justify-content-between">
-          <span>Номер</span><span>{{contract.number}}</span>
+          <span>Номер</span>
+          {% if contract.gip == request.user %}<a href="{% url 'contracts:contract-update' contract.id %}" class="btn btn-warning btn-sm active" role="button" aria-pressed="true">Редактировать</a>{% endif %}
+          <span>{{contract.number}}</span>
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item d-flex justify-content-between"><span>Наименование объекта</span><span>{{contract.object}}</span></li>

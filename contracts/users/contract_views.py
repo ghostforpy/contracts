@@ -251,9 +251,7 @@ class PermissionRequestDoneView(LoginRequiredMixin, View):
 class UpdateContractView(UpdateView):
     model = Contract
     fields = ["end", "state"]
-    # template_name = "women/addpage.html"
-    # success_url = reverse_lazy("home")
     template_name_suffix = "_update"
 
     def get_success_url(self) -> str:
-        return reverse("contract-detail", kwargs={"pk": self.pk})
+        return reverse("contracts:contract-detail", kwargs={"pk": self.get_object().id})
