@@ -59,22 +59,24 @@ class Town(models.Model):
 
 
 class Contract(models.Model):
+    STATES = [
+        ("in_process", "В процессе"),
+        ("restored", "Восстановлен"),
+        ("contract_organization", "Организация контракта"),
+        ("complete", "Завершен"),
+        ("arhive", "Архив"),
+    ]
     number = models.BigIntegerField("Номер контракта")
     object = models.CharField("Наименование объекта", max_length=150)
     state = models.CharField(
-        "Статус",
-        max_length=50,
-        choices=[
-            ("in_process", "В процессе"),
-            ("restored", "Восстановлен"),
-            ("contract_organization", "Организация контракта"),
-        ],
-        default="in_process",
+        "Статус", max_length=50, choices=STATES, default="in_process", blank=True
     )
     company = models.ForeignKey(
-        Company, on_delete=models.CASCADE, verbose_name="Предприятие"
+        Company, on_delete=models.CASCADE, verbose_name="Предприятие", blank=True
     )
-    town = models.ForeignKey(Town, on_delete=models.CASCADE, verbose_name="Город")
+    town = models.ForeignKey(
+        Town, on_delete=models.CASCADE, verbose_name="Город", blank=True
+    )
     description = models.TextField("Описание работ")
     start = models.DateField("Дата начала работ", blank=True, null=True)
     end = models.DateField("Плановая дата окончания работ", blank=True, null=True)

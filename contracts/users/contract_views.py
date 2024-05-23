@@ -11,7 +11,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 
 from django.utils.timezone import now
-from .forms import ContarctFilterForm
+from .forms import ContarctFilterForm, ArhiveContarctFilterForm
 from django.views.generic import (
     ListView,
     DetailView,
@@ -29,7 +29,7 @@ from .models import Contract, UserContractFolders, PermissionRequest
 # Topic views
 
 
-class ContractListView(ListView):
+class MainContractListView(ListView):
     model = Contract
     # template_name = "themes/index.html"  # <app>/<model>_<viewtype>.html
     context_object_name = "contracts"
@@ -37,29 +37,69 @@ class ContractListView(ListView):
     # paginate_by = 5
 
     def get_queryset(self) -> QuerySet[Any]:
-        self.form = ContarctFilterForm(self.request.GET)
+        # self.form = ContarctFilterForm(self.request.GET)
         qs = super().get_queryset().select_related("company", "creator").order_by("-id")
-        query = self.request.GET.get("query", None)
-        if query:
-            qs = qs.filter(
-                Q(number__icontains=query)
-                | Q(object__icontains=query)
-                | Q(description__icontains=query)
-                | Q(company__name__icontains=query)
-                | Q(town__name__icontains=query)
-            ).distinct()
+        # query = self.request.GET.get("query", None)
+        # if query:
+        #     qs = qs.filter(
+        #         Q(object__icontains=query)
+        #         | Q(description__icontains=query)
+        #         | Q(company__name__icontains=query)
+        #         | Q(town__name__icontains=query)
+        #     ).distinct()
         start = self.request.GET.get("start", None)
         if start:
             qs = qs.filter(start=datetime.strptime(start, "%d.%m.%Y"))
         end = self.request.GET.get("end", None)
         if end:
             qs = qs.filter(end=datetime.strptime(end, "%d.%m.%Y"))
+        number = self.request.GET.get("number", None)
+        if number:
+            qs = qs.filter(number__icontains=number)
+        _object = self.request.GET.get("object", None)
+        if _object:
+            qs = qs.filter(object__icontains=_object)
+        description = self.request.GET.get("description", None)
+        if description:
+            qs = qs.filter(description__icontains=description)
+        company = self.request.GET.get("company", None)
+        if company:
+            qs = qs.filter(company_id=company)
+        town = self.request.GET.get("town", None)
+        if town:
+            qs = qs.filter(town_id=town)
+        gip = self.request.GET.get("gip", None)
+        if gip:
+            qs = qs.filter(gip_id=gip)
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super(ContractListView, self).get_context_data(**kwargs)
+        context = super(MainContractListView, self).get_context_data(**kwargs)
         context["form"] = self.form
         return context
+
+
+class ContractListView(MainContractListView):
+
+    def get_queryset(self) -> QuerySet[Any]:
+        self.form = ContarctFilterForm(self.request.GET)
+        qs = super().get_queryset().exclude(state="arhive")
+        state = self.request.GET.get("state", None)
+        if state:
+            qs = qs.filter(state=state)
+        return qs
+
+
+class ArhiveContractListView(MainContractListView):
+    def get_queryset(self) -> QuerySet[Any]:
+        self.form = ArhiveContarctFilterForm(self.request.GET)
+        return (
+            super()
+            .get_queryset()
+            .select_related("company", "creator")
+            .order_by("-id")
+            .filter(state="arhive")
+        )
 
 
 class ContractCreateView(LoginRequiredMixin, CreateView):

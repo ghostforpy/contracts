@@ -2,6 +2,7 @@ from django.urls import path
 
 from .contract_views import (
     ContractListView,
+    ArhiveContractListView,
     ContractCreateView,
     ContractDetailView,
     PermissionRequestCreateView,
@@ -13,6 +14,7 @@ app_name = "contracts"
 
 urlpatterns = [
     path("", ContractListView.as_view(), name="contract-list"),
+    path("arhive/", ArhiveContractListView.as_view(), name="contract-arhive-list"),
     path(
         "permission-requests/",
         PermissionRequestListView.as_view(),
