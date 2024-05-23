@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="row">
+  <div class="col-10 offset-1 mt-5">
+      <h1>{{object}}</h1>
+  </div>
+</div>
+
+<div class="row mb-5">
+  <div class="col-10 offset-1 mt-5">
+    <form method="post">{% csrf_token %}
+      <fieldset class="form-group">
+          {{ form|crispy }}
+      </fieldset>
+      <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Обновить</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %} 

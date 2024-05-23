@@ -246,3 +246,14 @@ class PermissionRequestDoneView(LoginRequiredMixin, View):
             if not self.request.user.it_staff:
                 return self.handle_no_permission()
         return p
+
+
+class UpdateContractView(UpdateView):
+    model = Contract
+    fields = ["end", "state"]
+    # template_name = "women/addpage.html"
+    # success_url = reverse_lazy("home")
+    template_name_suffix = "_update"
+
+    def get_success_url(self) -> str:
+        return reverse("contract-detail", kwargs={"pk": self.pk})
