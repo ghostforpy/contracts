@@ -16,6 +16,7 @@ from .models import (
     Contract,
     UserContractFolders,
     PermissionRequest,
+    EndDateContractChange,
 )
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
@@ -153,3 +154,19 @@ class PermissionRequestAdmin(admin.ModelAdmin):
                 "creator",
             )
         )
+
+
+@admin.register(EndDateContractChange)
+class EndDateContractChangeAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "contract",
+        "user",
+        "new_date",
+        "created",
+    ]
+    list_display_links = ("id",)
+    list_select_related = (
+        "contract",
+        "user",
+    )

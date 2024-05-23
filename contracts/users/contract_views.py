@@ -24,7 +24,12 @@ from django.views.generic import (
 
 # from django.views.generic.list import BaseListView
 
-from .models import Contract, UserContractFolders, PermissionRequest
+from .models import (
+    Contract,
+    UserContractFolders,
+    PermissionRequest,
+    EndDateContractChange,
+)
 
 # Topic views
 
@@ -255,3 +260,15 @@ class UpdateContractView(UpdateView):
 
     def get_success_url(self) -> str:
         return reverse("contracts:contract-detail", kwargs={"pk": self.get_object().id})
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        old_end_date = self.get_object().end
+        resp = super().form_valid(form)
+        new_end_date = self.get_object().end
+        if old_end_date != new_end_date:
+            EndDateContractChange.objects.create(
+                user=self.request.user,
+                contract_id=self.kwargs.get(self.pk_url_kwarg),
+                new_date=new_end_date,
+            )
+        return resp

@@ -198,3 +198,24 @@ class PermissionRequest(models.Model):
             "admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name),
             args=(self.id,),
         )
+
+
+class EndDateContractChange(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="end_date_edits",
+    )
+    contract = models.ForeignKey(
+        Contract,
+        on_delete=models.CASCADE,
+        verbose_name="Контракт",
+        related_name="end_date_edits",
+    )
+    new_date = models.DateField("Новая дата")
+    created = models.DateTimeField("Создано", auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = _("Изменения дат окончания контрактов")
+        verbose_name = _("Изменение даты окончания контракта")
